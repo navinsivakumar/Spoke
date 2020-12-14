@@ -16,7 +16,9 @@ const {
   DB_SCHEMA,
   DB_DEBUG = "false",
   DATABASE_URL,
-  NODE_ENV
+  NODE_ENV,
+  DB_SOCKET_PATH,
+  CLOUD_SQL_CONNECTION_NAME,
 } = process.env;
 const min = parseInt(DB_MIN_POOL, 10);
 const max = parseInt(DB_MAX_POOL, 10);
@@ -31,6 +33,22 @@ let config;
 
 if (DB_JSON) {
   config = JSON.parse(DB_JSON);
+} else if (CLOUD_SQL_CONNECTION_NAME) {
+  const dbSocket = DB_SOCKET_PATH || "/cloudsql";
+  config = {
+    client: DB_TYPE,
+    connection: {
+      host: `${dbSocket}/${CLOUD_SQL_CONNECTION_NAME}`,
+      database: DB_NAME,
+      password: DB_PASSWORD,
+      user: DB_USER,
+      ssl: useSSL,
+    },
+    migrations: {
+      directory: process.env.KNEX_MIGRATION_DIR || "./migrations/"
+    },
+    pool: { min, max }
+  };
 } else if (DB_TYPE) {
   config = {
     client: DB_TYPE,
