@@ -31,19 +31,19 @@ You can now [deploy the Spoke container image to Cloud Run](https://cloud.google
 1. Click "Show Advanced Settings" to set the following:
     1. Set at least the following environment variables:
 
-    | Name | Value |
-    | ---- | ----- |
-    | `PASSPORT_STRATEGY` | `local` |
-    | `JOBS_SAME_PROCESS` | `1` |
-    | `DB_TYPE` | `pg` |
-    | `DB_USER` | `postgres` |
-    | `DB_PASSWORD` | the Cloud SQL password you set earlier |
-    | `SESSION_SECRET` | random key |
-    | `DB_SOCKET_PATH` | `/cloudsql` |
-    | `CLOUD_SQL_CONNECTION_NAME` | the Cloud SQL connection name you noted earlier |
-    | `KNEX_MIGRATION_DIR` | `/spoke/build/server/migrations/` |
+       | Name | Value |
+       | ---- | ----- |
+       | `PASSPORT_STRATEGY` | `local` |
+       | `JOBS_SAME_PROCESS` | `1` |
+       | `DB_TYPE` | `pg` |
+       | `DB_USER` | `postgres` |
+       | `DB_PASSWORD` | the Cloud SQL password you set earlier |
+       | `SESSION_SECRET` | random key |
+       | `DB_SOCKET_PATH` | `/cloudsql` |
+       | `CLOUD_SQL_CONNECTION_NAME` | the Cloud SQL connection name you noted earlier |
+       | `KNEX_MIGRATION_DIR` | `/spoke/build/server/migrations/` |
 
-    You can also set any other environment variables that are specific to your configuration.
+       You can also set any other environment variables that are specific to your configuration.
     1. Under "Connections", click the "Add Connection" button for "Cloud SQL Connections" and select your Cloud SQL instance in the dropdown.
 1. Under "Authentication", select "Allow unauthenticated invocations".
 1. Create the instance.
