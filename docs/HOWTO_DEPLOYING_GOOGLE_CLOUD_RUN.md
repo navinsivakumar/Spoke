@@ -30,6 +30,7 @@ You can now [deploy the Spoke container image to Cloud Run](https://cloud.google
 1. On the second page of the service creation form, in the "Container image URL" box, enter the image URL that you used when building the image using Cloud Build, e.g., `gcr.io/<your cloud project name>/spoke`.
 1. Click "Show Advanced Settings" to set the following:
     1. Set at least the following environment variables:
+
     | Name | Value |
     | ---- | ----- |
     | `PASSPORT_STRATEGY` | `local` |
@@ -41,6 +42,7 @@ You can now [deploy the Spoke container image to Cloud Run](https://cloud.google
     | `DB_SOCKET_PATH` | `/cloudsql` |
     | `CLOUD_SQL_CONNECTION_NAME` | the Cloud SQL connection name you noted earlier |
     | `KNEX_MIGRATION_DIR` | `/spoke/build/server/migrations/` |
+    
     You can also set any other environment variables that are specific to your configuration.
     1. Under "Connections", click the "Add Connection" button for "Cloud SQL Connections" and select your Cloud SQL instance in the dropdown.
 1. Under "Authentication", select "Allow unauthenticated invocations".
@@ -59,6 +61,7 @@ Your Spoke instance should now be running! On your first run, it can take severa
 If you have a small development instance that you are only using for manual testing, you are very likely to stay within [free tier](https://cloud.google.com/free/docs/gcp-free-tier#free-tier) usage limits for Cloud Run, Cloud Build, and Cloud Storage (used for artifacts from Run and Build), as long as you are operating in the `us-central1`, `us-east1`, or `us-west1` region. You will be charged for Cloud SQL. As of 14 Dec 2020, the least expensive Cloud SQL Postgres instance costs about 9 USD per month, if configured as follows:
 1. Under "Machine type and storage": set machine cores to 1 shared vCPU, memory to 0.6 GB, storage type to HDD, storage capacity to 10 GB, and disable automatic storage increases.
 1. Under "Backups, recovery, and high availability": disable automatic backups and set availability to "single zone."
+
 Such an instance is probably adequate for use during development. You can significantly reduce costs during development by [stopping your Cloud SQL instance](https://cloud.google.com/sql/docs/postgres/start-stop-restart-instance) when you are not actively using it and only starting it when you need it. Note that even a stopped instance will still incur some charges (charges for storage will continue), but this can drop the cost to ~2 USD per month if you only run the instance for a couple of hours each day. You can see full pricing information https://cloud.google.com/sql/pricing#pg-pricing.
 
 ## TODO
