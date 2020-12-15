@@ -17,8 +17,8 @@ You can either [install the Google Cloud SDK](https://cloud.google.com/sdk/docs/
     1. Make note of the database password that you set -- you will need this when deploying Spoke.
     1. **There is no free tier for Cloud SQL.** For tips to keep costs low during development, see configuration suggestions [below](#saving-money-on-development-deployments).
     1. View the newly created SQL instance in the Cloud Console and note its [_Connection name_](https://cloud.google.com/sql/docs/postgres/instance-info#connect_to_this_instance). This will have the form `<project name>:<location>:<sql instance name>`.
-1. [Build and push](https://cloud.google.com/run/docs/building/containers) a container image to the container registry.
-    1. The easiest way to do this is via Cloud Build:
+1. [Build and push](https://cloud.google.com/run/docs/building/containers) a Spoke container image to the container registry.
+    1. The easiest way to do this is via Cloud Build from the root directory of your Spoke repository:
     ```shell
     gcloud builds submit --tag gcr.io/<your cloud project name>/spoke
     ```
@@ -42,7 +42,7 @@ You can now [deploy the Spoke container image to Cloud Run](https://cloud.google
     | `DB_SOCKET_PATH` | `/cloudsql` |
     | `CLOUD_SQL_CONNECTION_NAME` | the Cloud SQL connection name you noted earlier |
     | `KNEX_MIGRATION_DIR` | `/spoke/build/server/migrations/` |
-    
+
     You can also set any other environment variables that are specific to your configuration.
     1. Under "Connections", click the "Add Connection" button for "Cloud SQL Connections" and select your Cloud SQL instance in the dropdown.
 1. Under "Authentication", select "Allow unauthenticated invocations".
