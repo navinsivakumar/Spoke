@@ -73,7 +73,8 @@ In no particular order:
 * Redis
 * Updating
 * See if you can do a free tier deployment by DIYing SQL instead of using Cloud SQL
-* Verify that calls to external APIs (e.g. Twilio, Mailgun) work
+* ~~Verify that calls to external APIs (e.g. Twilio, Mailgun) work~~
 * Multihoming?
 * Provide a YAML configuration for Cloud Run
 * Terraform?
+* [Berglas?](https://github.com/GoogleCloudPlatform/berglas)
