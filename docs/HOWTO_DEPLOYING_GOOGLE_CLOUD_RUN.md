@@ -78,6 +78,7 @@ In no particular order:
 * See if you can do a free tier deployment by DIYing SQL instead of using Cloud SQL
 * ~~Verify that calls to external APIs (e.g. Twilio, Mailgun) work~~
     * Verified Twilio, standard docs work fine. I have to imagine Mailgun is the same.
+* Export to GCS
 * Multihoming?
 * Provide a YAML configuration for Cloud Run
 * Terraform?
