@@ -71,6 +71,7 @@ In no particular order:
 * ~~Auth0~~
     * Just follow standard docs and it works
 * Custom domains
+    * Works, needs some GCP-specific documentation (although standard GCP docs are straightforward enough)
 * Redis
     * Got it working, needs GCP-specific documentation for Memorystore
 * Updating
