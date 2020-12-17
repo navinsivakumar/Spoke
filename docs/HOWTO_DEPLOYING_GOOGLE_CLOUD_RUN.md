@@ -68,12 +68,15 @@ Such an instance is probably adequate for use during development. You can signif
 
 In no particular order:
 * Figure out minimal IAM permissions
-* Auth0
+* ~~Auth0~~
+    * Just follow standard docs and it works
 * Custom domains
 * Redis
+    * Got it working, needs GCP-specific documentation for Memorystore
 * Updating
 * See if you can do a free tier deployment by DIYing SQL instead of using Cloud SQL
 * ~~Verify that calls to external APIs (e.g. Twilio, Mailgun) work~~
+    * Verified Twilio, standard docs work fine. I have to imagine Mailgun is the same.
 * Multihoming?
 * Provide a YAML configuration for Cloud Run
 * Terraform?
