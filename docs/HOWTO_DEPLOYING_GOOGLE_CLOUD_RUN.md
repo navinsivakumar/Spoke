@@ -106,9 +106,8 @@ In no particular order:
     * Just follow standard docs and it works
 * Custom domains
     * Works, needs some GCP-specific documentation (although standard GCP docs are straightforward enough)
-* Redis
-    * Got it working, needs GCP-specific documentation for Memorystore
-    * Static IPs
+* ~~Redis~~
+    * Documented, maybe add static IPs
 * Updating
 * See if you can do a free tier deployment by DIYing SQL instead of using Cloud SQL
 * ~~Verify that calls to external APIs (e.g. Twilio, Mailgun) work~~
