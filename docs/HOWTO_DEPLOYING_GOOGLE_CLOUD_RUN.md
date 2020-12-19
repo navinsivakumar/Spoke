@@ -47,7 +47,6 @@ You can now [deploy the Spoke container image to Cloud Run](https://cloud.google
 
        | Name | Value |
        | ---- | ----- |
-       | `PASSPORT_STRATEGY` | `local` |
        | `JOBS_SAME_PROCESS` | `1` |
        | `DB_TYPE` | `pg` |
        | `DB_USER` | `postgres` |
