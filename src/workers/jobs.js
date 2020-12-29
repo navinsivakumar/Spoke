@@ -678,10 +678,51 @@ const uploadToCloud = async ({key, contents}) => {
       "getObject",
       {Key: key, Expires: 86400}
     );
-  } else {
-    log.debug("Would have saved the following to the cloud:");
-    log.debug(contents);
   }
+
+  if (
+    getConfig("GCP_ACCESS_AVAILABLE") ||
+    process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+    (process.env.GCP_SERVICE_ACCOUNT_EMAIL &&
+      process.env.GCP_SERVICE_ACCOUNT_PRIVATE_KEY)
+  ) {
+    let credentials;
+    if (
+      process.env.GCP_SERVICE_ACCOUNT_EMAIL &&
+      process.env.GCP_SERVICE_ACCOUNT_PRIVATE_KEY
+    ) {
+      credentials = {
+        client_email: process.env.GCP_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
+      }
+    }
+    const {Storage} = require("@google-cloud/storage");
+    const storage = new Storage({credentials});
+
+    const bucket = process.env.GCP_STORAGE_BUCKET_NAME;
+    const file = storage.bucket(bucket).file(key);
+
+    const writeStream =
+      file.createWriteStream({resumable: false});
+    writeStream.write(contents);
+    writeStream.end();
+    await new Promise((resolve, reject) => {
+      writeStream.on("finish", resolve);
+      writeStream.on("error", reject);
+    });
+
+    const [url] = await file.getSignedUrl(
+      {
+        version: "v4",
+        action: "read",
+        expires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      }
+    );
+    return url;
+  }
+
+  log.debug("Would have saved the following to the cloud:");
+  log.debug(contents);
 }
 
 export async function exportCampaign(job) {
