@@ -112,6 +112,7 @@ In no particular order:
     * Verified Twilio, standard docs work fine. I have to imagine Mailgun is the same.
 * Is it possible to import scripts from Docs using service account for authentication (no JSON credentials in `GOOGLE_SECRET`)?
 * Export to GCS
+    * Working code that isn't super clean, needs documentation
 * Multihoming?
 * Provide a YAML configuration for Cloud Run
 * Terraform?
