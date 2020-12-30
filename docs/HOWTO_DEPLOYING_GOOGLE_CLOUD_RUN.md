@@ -23,6 +23,14 @@ You can either [install the Google Cloud SDK](https://cloud.google.com/sdk/docs/
     gcloud builds submit --tag gcr.io/<your cloud project name>/spoke
     ```
 
+### Service account configuration
+
+Strictly speaking, this is optional for the simplest deployment, as you can get a working Spoke service using the default compute service account `PROJECT_NUMBER-compute@developer.gserviceaccount.com`. However, it's best to create a dedicated service account for the Spoke service that has minimal permissions.
+
+1.  [Create a new service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating) in your project.
+    1.  Grant the new service account the IAM role `roles/cloudsql.client` on the project.
+1.  Any user with `roles/owner` or `roles/editor` on the project will be able to deploy a Spoke service that runs as this account. If you wish to add additional users, grant them the IAM role `roles/iam.serviceAccountUser` on the service account resource.
+
 ### Redis
 
 **There is no free tier for Memorystore for Redis.** For tips to keep costs low during development, see configuration suggestions [below](#saving-money-on-development-deployments).
@@ -43,8 +51,8 @@ You can now [deploy the Spoke container image to Cloud Run](https://cloud.google
 1.  Select "Cloud Run (fully managed)" as the deployment platform.
 1.  On the second page of the service creation form, in the "Container image URL" box, enter the image URL that you used when building the image using Cloud Build, e.g., `gcr.io/<your cloud project name>/spoke`.
 1.  Click "Show Advanced Settings" to set the following:
+    1.  If you are using a dedicated service account, select the service account from the dropdown under "General".
     1.  Set at least the following environment variables:
-
         | Name | Value |
         | ---- | ----- |
         | `JOBS_SAME_PROCESS` | `1` |
@@ -100,7 +108,6 @@ Unfortunately you cannot stop a Redis instance as with Cloud SQL. If you are con
 ## TODO
 
 In no particular order:
-* Figure out minimal IAM permissions
 * ~~Auth0~~
     * Just follow standard docs and it works
 * Custom domains
