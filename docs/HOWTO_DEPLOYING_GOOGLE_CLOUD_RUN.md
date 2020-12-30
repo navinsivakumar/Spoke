@@ -8,6 +8,10 @@ Quick sketch of a basic deployment of Spoke to Google Cloud Run using Cloud SQL 
 
 You can either [install the Google Cloud SDK](https://cloud.google.com/sdk/docs/install) on your local machine or run these commands in a [Cloud Shell](https://cloud.google.com/shell).
 
+## Terraform
+
+There is a very experimental Terraform configuration available at https://github.com/navinsivakumar/spoke-on-gcp. The deployment configured there follows more or less the same model as is outlined here.
+
 ## Prepare GCP resources
 
 1.  Select or [create](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project) a Google Cloud project. The project needs to be linked to a billing account. Make note of your project name.
@@ -108,18 +112,11 @@ Unfortunately you cannot stop a Redis instance as with Cloud SQL. If you are con
 ## TODO
 
 In no particular order:
-* ~~Auth0~~
-    * Just follow standard docs and it works
 * Custom domains
     * Works, needs some GCP-specific documentation (although standard GCP docs are straightforward enough)
-* ~~Redis~~
-    * Documented, maybe add static IPs
 * Updating
-* ~~Verify that calls to external APIs (e.g. Twilio, Mailgun) work~~
-    * Verified Twilio, standard docs work fine. I have to imagine Mailgun is the same.
 * Is it possible to import scripts from Docs using service account for authentication (no JSON credentials in `GOOGLE_SECRET`)?
 * Export to GCS
 * Multihoming?
 * Provide a YAML configuration for Cloud Run
-* Terraform?
 * [Berglas?](https://github.com/GoogleCloudPlatform/berglas)
