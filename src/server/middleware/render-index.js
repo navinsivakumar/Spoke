@@ -1,6 +1,7 @@
 import { hasConfig, getConfig } from "../api/lib/config";
 
-const canGoogleImport = hasConfig("GOOGLE_SECRET");
+const canGoogleImport = hasConfig("GOOGLE_SECRET") ||
+  hasConfig("GCP_ACCESS_AVAILABLE");
 
 const rollbarScript = process.env.ROLLBAR_CLIENT_TOKEN
   ? `<script>

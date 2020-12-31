@@ -4,12 +4,14 @@ import _ from "lodash";
 import { compose, map, reduce, getOr, find, filter, has } from "lodash/fp";
 
 import { r, cacheableData } from "../../models";
-import { getConfig } from "./config";
+import { getConfig, hasConfig } from "./config";
 
 const textRegex = RegExp(".*[A-Za-z0-9]+.*");
 
 const getDocument = async documentId => {
-  const auth = google.auth.fromJSON(JSON.parse(getConfig("GOOGLE_SECRET")));
+  const auth = hasConfig("GCP_ACCESS_AVAILABLE") ?
+    await google.auth.getClient() :
+    google.auth.fromJSON(JSON.parse(getConfig("GOOGLE_SECRET")));
   auth.scopes = ["https://www.googleapis.com/auth/documents"];
 
   const docs = google.docs({
