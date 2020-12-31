@@ -45,6 +45,10 @@ If you plan to run Redis, you will need to go through some extra configuration:
     1. Choose the same network that your Redis instance is configured on.
     1. Choose an IP range. The example `10.8.0.0/28` will probably work fine.
 
+### Export to Cloud Storage
+
+You can find instructions on configuring export to Cloud Storage (aka GCS) in [Configuring data exports](HOWTO_DATA_EXPORTING.md).
+
 ## Deploy to Cloud Run
 
 You can now [deploy the Spoke container image to Cloud Run](https://cloud.google.com/run/docs/deploying#service) with the following settings:
@@ -118,8 +122,6 @@ In no particular order:
 * ~~Verify that calls to external APIs (e.g. Twilio, Mailgun) work~~
     * Verified Twilio, standard docs work fine. I have to imagine Mailgun is the same.
 * Is it possible to import scripts from Docs using service account for authentication (no JSON credentials in `GOOGLE_SECRET`)?
-* Export to GCS
-    * Working code that isn't super clean, needs documentation
 * Multihoming?
 * Provide a YAML configuration for Cloud Run
 * Terraform?
