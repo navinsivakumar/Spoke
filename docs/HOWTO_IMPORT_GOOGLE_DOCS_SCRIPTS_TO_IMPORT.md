@@ -6,6 +6,14 @@ It's a horrible idea to publish live secrets to Github. You should never do that
 
 ## Setup
 
+### Running on GCP
+
+If you are running in an environment that has automatic access to Google service account credentials (e.g. Cloud Run, GCE, GKE, GAE, or most GCP compute environments), enable the Google Docs API (`docs.googleapis.com`) on the GCP project where you run Spoke. You can now follow the instructions to [create a script document](#create-script-documents) and [import the script](#import-a-script).
+
+### Running on other platforms
+
+Follow these steps if you are running in an environment that does not have automatic access to Google service account credentials (e.g. AWS, Heroku, or any other non-GCP cloud platform).
+
 1. You must be logged in to Google.
 1. Visit [this page](https://developers.google.com/docs/api/quickstart/nodejs) to start creating Google API credentials.
 1. Click `Enable the Google Docs API`.
@@ -72,10 +80,12 @@ It's a horrible idea to publish live secrets to Github. You should never do that
 
 1. Create a script from a Google Doc Spoke script template - see for example https://docs.google.com/document/d/1gFji2Vh_0svb4j7VUtmJZkqNhRWt3htp_bdGoWh6S6w/edit
 2. Copy the template, create a new draft doc with that and save it, then edit the new script doc, not the template :)
-3. Share the script document with your API user.
+3. Share the script document with your Spoke service account (if running on GCP) or API user (if running on another platform).
    - Go to the document in Google Docs.
    - Click `Share` in the upper right corner of the browser window. The `Share with others` dialog will appear.
-   - Paste the email address from step 19 above (in this example, `test-252@quickstart-1552345943126.iam.gserviceaccount.com`) in the `People` field in the lower section of the `Share with others` dialog.
+   - Insert the appropriate email address in the `People` field in the lower section of the `Share with others` dialog:
+     - If you are [running on GCP](#running-on-gcp), enter the email address of your Spoke service account (i.e. the account that the Spoke service runs as).
+     - If you are [not running on GCP](#running-on-other-platforms), enter the email address from step 19 above (in this example, `test-252@quickstart-1552345943126.iam.gserviceaccount.com`).
    - Clear the `Notify people` checkbox.
    - Click `OK`.
 
