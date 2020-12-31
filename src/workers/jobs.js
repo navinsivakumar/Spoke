@@ -656,6 +656,75 @@ export async function assignTexters(job) {
   }
 }
 
+/**
+ * Attempts to upload contents to cloud storage and returns a signed URL to the
+ * stored object.
+ *
+ * @param {string} params.key The key for the storage object to create
+ * @param {string} params.contents The contents to upload to the object at Key
+ * @returns {string} A signed URL to the newly stored object. The URL will be
+ *    valid for 24 hours from the time of creation.
+ */
+const uploadToCloud = async ({key, contents}) => {
+  if (
+    getConfig("AWS_ACCESS_AVAILABLE") ||
+    (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY)
+  ) {
+    const s3bucket = new AWS.S3({
+      params: { Bucket: process.env.AWS_S3_BUCKET_NAME }
+    });
+    await s3bucket.putObject({Key: key, Body: contents}).promise();
+    return await s3bucket.getSignedUrl(
+      "getObject",
+      {Key: key, Expires: 86400}
+    );
+  }
+
+  if (
+    getConfig("GCP_ACCESS_AVAILABLE") ||
+    process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+    (process.env.GCP_SERVICE_ACCOUNT_EMAIL &&
+      process.env.GCP_SERVICE_ACCOUNT_PRIVATE_KEY)
+  ) {
+    let credentials;
+    if (
+      process.env.GCP_SERVICE_ACCOUNT_EMAIL &&
+      process.env.GCP_SERVICE_ACCOUNT_PRIVATE_KEY
+    ) {
+      credentials = {
+        client_email: process.env.GCP_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
+      }
+    }
+    const {Storage} = require("@google-cloud/storage");
+    const storage = new Storage({credentials});
+
+    const bucket = process.env.GCP_STORAGE_BUCKET_NAME;
+    const file = storage.bucket(bucket).file(key);
+
+    const writeStream =
+      file.createWriteStream({resumable: false});
+    writeStream.write(contents);
+    writeStream.end();
+    await new Promise((resolve, reject) => {
+      writeStream.on("finish", resolve);
+      writeStream.on("error", reject);
+    });
+
+    const [url] = await file.getSignedUrl(
+      {
+        version: "v4",
+        action: "read",
+        expires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      }
+    );
+    return url;
+  }
+
+  log.debug("Would have saved the following to the cloud:");
+  log.debug(contents);
+}
+
 export async function exportCampaign(job) {
   const payload = JSON.parse(job.payload);
   const id = job.campaign_id;
@@ -799,35 +868,18 @@ export async function exportCampaign(job) {
   const campaignCsv = Papa.unparse(finalCampaignResults);
   const messageCsv = Papa.unparse(finalCampaignMessages);
 
-  if (
-    getConfig("AWS_ACCESS_AVAILABLE") ||
-    (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY)
-  ) {
-    try {
-      const s3bucket = new AWS.S3({
-        params: { Bucket: process.env.AWS_S3_BUCKET_NAME }
-      });
-      const campaignTitle = campaign.title
-        .replace(/ /g, "_")
-        .replace(/\//g, "_");
-      const key = `${campaignTitle}-${moment().format(
-        "YYYY-MM-DD-HH-mm-ss"
-      )}.csv`;
-      const messageKey = `${key}-messages.csv`;
-      let params = { Key: key, Body: campaignCsv };
-      await s3bucket.putObject(params).promise();
-      params = { Key: key, Expires: 86400 };
-      const campaignExportUrl = await s3bucket.getSignedUrl(
-        "getObject",
-        params
-      );
-      params = { Key: messageKey, Body: messageCsv };
-      await s3bucket.putObject(params).promise();
-      params = { Key: messageKey, Expires: 86400 };
-      const campaignMessagesExportUrl = await s3bucket.getSignedUrl(
-        "getObject",
-        params
-      );
+  try {
+    const campaignTitle = campaign.title
+      .replace(/ /g, "_")
+      .replace(/\//g, "_");
+    const key = `${campaignTitle}-${moment().format(
+      "YYYY-MM-DD-HH-mm-ss"
+    )}.csv`;
+    const campaignExportUrl = await uploadToCloud({key, contents: campaignCsv});
+    const messageKey = `${key}-messages.csv`;
+    const campaignMessagesExportUrl =
+        await uploadToCloud({key: messageKey, contents: messageCsv});
+    if (campaignExportUrl && campaignMessagesExportUrl) {
       await sendEmail({
         to: user.email,
         subject: `Export ready for ${campaign.title}`,
@@ -840,19 +892,19 @@ export async function exportCampaign(job) {
         log.info(`Campaign Messages Export URL - ${campaignMessagesExportUrl}`);
       });
       log.info(`Successfully exported ${id}`);
-    } catch (err) {
-      log.error(err);
-      await sendEmail({
-        to: user.email,
-        subject: `Export failed for ${campaign.title}`,
-        text: `Your Spoke exports failed... please try again later.
-        Error: ${err.message}`
-      });
+    } else {
+      log.debug("Would have saved the following to the cloud:");
+      log.debug(campaignCsv);
+      log.debug(messageCsv);
     }
-  } else {
-    log.debug("Would have saved the following to S3:");
-    log.debug(campaignCsv);
-    log.debug(messageCsv);
+  } catch(err) {
+    log.error(err);
+    await sendEmail({
+      to: user.email,
+      subject: `Export failed for ${campaign.title}`,
+      text: `Your Spoke exports failed... please try again later.
+      Error: ${err.message}`
+    });
   }
 
   await defensivelyDeleteJob(job);
